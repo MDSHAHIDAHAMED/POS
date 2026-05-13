@@ -1,0 +1,8 @@
+{
+  "name": "NovaPOS Enterprise ERP",
+  "description": "A futuristic, full-stack enterprise retail management system featuring a high-performance POS, real-time inventory tracking, multi-role RBAC, and advanced financial analytics.",
+  "requestFramePermissions": [
+    "camera"
+  ],
+  "majorCapabilities": []
+}

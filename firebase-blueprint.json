@@ -1,0 +1,101 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "System user with role-based access",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string" },
+        "displayName": { "type": "string" },
+        "role": { "type": "string", "enum": ["super_admin", "admin", "manager", "cashier", "accountant", "store_keeper"] },
+        "status": { "type": "string", "enum": ["active", "inactive"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email", "role"]
+    },
+    "Product": {
+      "title": "Product",
+      "description": "Retail product",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "sku": { "type": "string" },
+        "barcode": { "type": "string" },
+        "categoryId": { "type": "string" },
+        "brandId": { "type": "string" },
+        "purchasePrice": { "type": "number" },
+        "salePrice": { "type": "number" },
+        "wholesalePrice": { "type": "number" },
+        "taxRate": { "type": "number" },
+        "discount": { "type": "number" },
+        "stockLevel": { "type": "number" },
+        "minStockLevel": { "type": "number" },
+        "expiryDate": { "type": "string", "format": "date" },
+        "supplierId": { "type": "string" },
+        "imageUrl": { "type": "string" },
+        "status": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "sku", "salePrice"]
+    },
+    "Sale": {
+      "title": "Sale",
+      "description": "Sales transaction",
+      "type": "object",
+      "properties": {
+        "invoiceNo": { "type": "string" },
+        "customerId": { "type": "string" },
+        "cashierId": { "type": "string" },
+        "totalAmount": { "type": "number" },
+        "discountAmount": { "type": "number" },
+        "taxAmount": { "type": "number" },
+        "payableAmount": { "type": "number" },
+        "paidAmount": { "type": "number" },
+        "changeAmount": { "type": "number" },
+        "paymentMethod": { "type": "string", "enum": ["cash", "card", "mobile_banking"] },
+        "status": { "type": "string", "enum": ["completed", "on_hold", "suspended", "returned"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      }
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profiles"
+    },
+    "/products/{productId}": {
+      "schema": "Product",
+      "description": "Product catalog"
+    },
+    "/sales/{saleId}": {
+      "schema": "Sale",
+      "description": "Sales records"
+    },
+    "/sales/{saleId}/items/{itemId}": {
+      "schema": "object",
+      "description": "Individual items in a sale"
+    },
+    "/categories/{categoryId}": {
+      "schema": "object",
+      "description": "Product categories"
+    },
+    "/brands/{brandId}": {
+      "schema": "object",
+      "description": "Product brands"
+    },
+    "/suppliers/{supplierId}": {
+      "schema": "object",
+      "description": "Product suppliers"
+    },
+    "/customers/{customerId}": {
+      "schema": "object",
+      "description": "Customer profiles"
+    },
+    "/inventory_logs/{logId}": {
+      "schema": "object",
+      "description": "Stock movement logs"
+    }
+  }
+}
