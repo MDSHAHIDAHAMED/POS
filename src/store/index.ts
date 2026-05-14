@@ -1,11 +1,15 @@
 import { create } from 'zustand';
 import { UserProfile, Product, SaleItem } from '../types';
+import { api, setToken, getToken } from '../lib/api';
 
 interface AuthState {
   user: UserProfile | null;
   loading: boolean;
   setUser: (user: UserProfile | null) => void;
   setLoading: (loading: boolean) => void;
+  login: (email: string, password: string) => Promise<void>;
+  logout: () => Promise<void>;
+  restoreSession: () => Promise<void>;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -13,6 +17,35 @@ export const useAuthStore = create<AuthState>((set) => ({
   loading: true,
   setUser: (user) => set({ user }),
   setLoading: (loading) => set({ loading }),
+  login: async (email, password) => {
+    const { token, user } = await api.auth.login(email, password);
+    setToken(token);
+    set({ user });
+  },
+  logout: async () => {
+    try {
+      if (getToken()) await api.auth.logout();
+    } catch {
+      // ignore
+    }
+    setToken(null);
+    set({ user: null });
+  },
+  restoreSession: async () => {
+    set({ loading: true });
+    const token = getToken();
+    if (!token) {
+      set({ user: null, loading: false });
+      return;
+    }
+    try {
+      const { user } = await api.auth.me();
+      set({ user, loading: false });
+    } catch {
+      setToken(null);
+      set({ user: null, loading: false });
+    }
+  },
 }));
 
 interface UIState {
@@ -47,13 +80,13 @@ export const useCartStore = create<CartState>((set, get) => ({
       get().updateQuantity(product.id, existingItem.quantity + 1);
     } else {
       set((state) => ({
-        items: [...state.items, { 
-          productId: product.id, 
-          name: product.name, 
-          price: product.salePrice, 
-          quantity: 1, 
+        items: [...state.items, {
+          productId: product.id,
+          name: product.name,
+          price: product.salePrice,
+          quantity: 1,
           subtotal: product.salePrice,
-          product
+          product,
         }],
       }));
     }
