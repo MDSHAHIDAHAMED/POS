@@ -71,6 +71,15 @@ async function getSystemCashier() {
 export const app = express();
 app.use(express.json());
 
+// Netlify rewrites /api/* to /.netlify/functions/api/* — restore /api prefix for Express routes.
+app.use((req, _res, next) => {
+  const fnPrefix = "/.netlify/functions/api";
+  if (req.url.startsWith(fnPrefix)) {
+    req.url = `/api${req.url.slice(fnPrefix.length) || ""}`;
+  }
+  next();
+});
+
 app.get("/api/health", async (_req, res) => {
   try {
     await prisma.$queryRaw`SELECT 1`;
