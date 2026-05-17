@@ -74,11 +74,9 @@ async function getSystemCashier() {
   return user;
 }
 
-async function startServer() {
-  const app = express();
-  const PORT = Number(process.env.PORT) || 3000;
+export const app = express();
+app.use(express.json());
 
-  app.use(express.json());
 
   app.get("/api/health", async (_req, res) => {
     try {
@@ -644,6 +642,8 @@ async function startServer() {
   });
 
   // ── Vite / Static ──────────────────────────────────────────
+async function startServer() {
+  const PORT = Number(process.env.PORT) || 3000;
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
       server: { middlewareMode: true },
@@ -664,6 +664,8 @@ async function startServer() {
   });
 }
 
-startServer().catch((err) => {
-  console.error("Failed to start server:", err);
-});
+if (!process.env.NETLIFY_FUNCTIONS) {
+  startServer().catch((err) => {
+    console.error("Failed to start server:", err);
+  });
+}
